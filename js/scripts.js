@@ -31,4 +31,33 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     });
 
+    const progressBar = document.querySelector('.reading-progress span');
+
+    const updateProgress = () => {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+        if (progressBar) progressBar.style.width = `${progress}%`;
+    };
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    const revealItems = document.querySelectorAll('.resume-section-content');
+    revealItems.forEach(item => item.classList.add('resume-reveal'));
+
+    if ('IntersectionObserver' in window) {
+        const revealObserver = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        revealItems.forEach(item => revealObserver.observe(item));
+    } else {
+        revealItems.forEach(item => item.classList.add('is-visible'));
+    }
+
 });
